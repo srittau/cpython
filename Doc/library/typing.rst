@@ -4339,3 +4339,23 @@ convenience. This is subject to change, and not all deprecations are listed.
      - 3.13
      - 3.18
      - :gh:`105578`
+   * - :class:`typing.Optional`
+     - 3.16
+     - Undecided
+     - :gh:`132941`
+   * - :class:`typing.NoReturn`
+     - 3.16
+     - Undecided
+     - :gh:`132941`
+   * - :class:`typing.ForwardRef`
+     - 3.16
+     - Undecided
+     - :gh:`132941`
+   * - ``Union[X, Y]``
+     - 3.16
+     - Undecided
+     - :gh:`132941`
+   * - Inheriting from :class:`typing.Generic`
+     - 3.16
+     - Undecided
+     - :gh:`132941`
