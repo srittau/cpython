@@ -582,30 +582,15 @@ can be parameterised at runtime (e.g. ``LoggedVar[int]`` below)::
 A generic type can have any number of type variables. All varieties of
 :class:`TypeVar` are permissible as parameters for a generic type::
 
-   from typing import TypeVar, Generic, Sequence
+   from typing import Sequence
 
    class WeirdTrio[T, B: Sequence[bytes], S: (int, str)]:
-       ...
-
-   OldT = TypeVar('OldT', contravariant=True)
-   OldB = TypeVar('OldB', bound=Sequence[bytes], covariant=True)
-   OldS = TypeVar('OldS', int, str)
-
-   class OldWeirdTrio(Generic[OldT, OldB, OldS]):
        ...
 
 Each type variable argument to :class:`Generic` must be distinct.
 This is thus invalid::
 
-   from typing import TypeVar, Generic
-   ...
-
    class Pair[M, M]:  # SyntaxError
-       ...
-
-   T = TypeVar('T')
-
-   class Pair(Generic[T, T]):   # INVALID
        ...
 
 Generic classes can also inherit from other classes::
@@ -678,7 +663,8 @@ to this is that a list of types can be used to substitute a :class:`ParamSpec`::
    >>> Z[int, [dict, float]]
    __main__.Z[int, [dict, float]]
 
-Classes generic over a :class:`ParamSpec` can also be created using explicit
+For compatibility with Python 3.11 and below, classes generic over a
+:class:`ParamSpec` can also be created using explicit
 inheritance from :class:`Generic`. In this case, ``**`` is not used::
 
    from typing import ParamSpec, Generic
@@ -949,7 +935,7 @@ using ``[]``.
    They can be used to indicate that a function never returns,
    such as :func:`sys.exit`::
 
-      from typing import Never  # or NoReturn
+      from typing import Never
 
       def stop() -> Never:
           raise RuntimeError('no way')
@@ -958,7 +944,7 @@ using ``[]``.
    called, as there are no valid arguments, such as
    :func:`assert_never`::
 
-      from typing import Never  # or NoReturn
+      from typing import Never
 
       def never_call_me(arg: Never) -> None:
           pass
@@ -971,7 +957,7 @@ using ``[]``.
               case str():
                   print("It's a str")
               case _:
-                  never_call_me(arg)  # OK, arg is of type Never (or NoReturn)
+                  never_call_me(arg)  # OK, arg is of type Never
 
    :data:`!Never` and :data:`!NoReturn` have the same meaning in the type system
    and static type checkers treat both equivalently.
@@ -983,6 +969,9 @@ using ``[]``.
    .. versionadded:: 3.11
 
       Added :data:`Never`.
+
+   .. deprecated:: 3.16
+      ``NoReturn`` is deprecated, please use``Never`` instead.
 
 .. data:: Self
 
@@ -1005,11 +994,7 @@ using ``[]``.
    This annotation is semantically equivalent to the following,
    albeit in a more succinct fashion::
 
-      from typing import TypeVar
-
-      Self = TypeVar("Self", bound="Foo")
-
-      class Foo:
+      class Foo[Self: Foo]:
           def return_self(self: Self) -> Self:
               ...
               return self
@@ -1057,17 +1042,15 @@ using ``[]``.
 
    .. testcode::
 
-      from typing import Generic, TypeAlias, TypeVar
-
-      T = TypeVar("T")
+      from typing import TypeAlias
 
       # "Box" does not exist yet,
-      # so we have to use quotes for the forward reference on Python <3.12.
+      # so we have to use quotes for the forward reference on Python <3.14.
       # Using ``TypeAlias`` tells the type checker that this is a type alias declaration,
       # not a variable assignment to a string.
       BoxOfStrings: TypeAlias = "Box[str]"
 
-      class Box(Generic[T]):
+      class Box[T]:
           @classmethod
           def make_box_of_strings(cls) -> BoxOfStrings: ...
 
@@ -1140,6 +1123,10 @@ These can be used as types in annotations. They all support subscription using
       Python, use
       ``get_origin(obj) is typing.Union or get_origin(obj) is types.UnionType``.
 
+   .. deprecated:: 3.16
+      Creating unions using ``Union[X, Y]`` is deprecated. Use ``X | Y``
+      instead.
+
 .. data:: Optional
 
    ``Optional[X]`` is equivalent to ``X | None`` (or ``Union[X, None]``).
@@ -1160,8 +1147,12 @@ These can be used as types in annotations. They all support subscription using
           ...
 
    .. versionchanged:: 3.10
-      Optional can now be written as ``X | None``. See
+      ``Optional[X]`` can now be written as ``X | None``. See
       :ref:`union type expressions<types-union>`.
+
+   .. deprecated:: 3.16
+      ``Optional`` is deprecated. Instead, use ``X | None`` to create optional
+      unions and :class:`Union` to refer to the union type.
 
 .. data:: Concatenate
 
@@ -1775,6 +1766,8 @@ without the dedicated syntax, as documented below.
    ``Generic``. In this case, the type parameters must be declared
    separately::
 
+      from typing import Generic, TypeVar
+
       KT = TypeVar('KT')
       VT = TypeVar('VT')
 
@@ -1782,6 +1775,10 @@ without the dedicated syntax, as documented below.
           def __getitem__(self, key: KT) -> VT:
               ...
               # Etc.
+
+   .. deprecated:: 3.16
+      Explicitly inheriting from ``Generic`` is deprecated. Use the dedicated
+      syntax for declaring type variables instead.
 
 .. _typevar:
 
@@ -2166,8 +2163,7 @@ without the dedicated syntax, as documented below.
 
       type IntFunc[**P] = Callable[P, int]
 
-   For compatibility with Python 3.11 and earlier, ``ParamSpec`` objects
-   can also be created as follows::
+   ``ParamSpec`` objects can also be explicitly created as follows::
 
       P = ParamSpec('P')
 
@@ -3507,7 +3503,7 @@ Introspection helpers
    This is often the same as :func:`annotationlib.get_annotations`, but this
    function makes the following changes to the annotations dictionary:
 
-   * Forward references encoded as string literals or :class:`ForwardRef`
+   * Forward references encoded as string literals or :class:`annotationlib.ForwardRef`
      objects are handled by evaluating them in *globalns*, *localns*, and
      (where applicable) *obj*'s :ref:`type parameter <type-params>` namespace.
      If *globalns* or *localns* is not given, appropriate namespace
@@ -3554,7 +3550,7 @@ Introspection helpers
       See the documentation on :data:`Annotated` for more information.
 
    .. versionchanged:: 3.11
-      Previously, ``Optional[t]`` was added for function and method annotations
+      Previously, ``t | None`` was added for function and method annotations
       if a default value equal to ``None`` was set.
       Now the annotation is returned unchanged.
 
@@ -3708,6 +3704,9 @@ Introspection helpers
       This is now an alias for :class:`annotationlib.ForwardRef`. Several undocumented
       behaviors of this class have been changed; for example, after a ``ForwardRef`` has
       been evaluated, the evaluated value is no longer cached.
+
+   .. deprecated:: 3.16
+      Use :class:`annotationlib.ForwardRef` instead.
 
 .. function:: evaluate_forward_ref(forward_ref, *, owner=None, globals=None, locals=None, type_params=None, format=annotationlib.Format.VALUE)
 
@@ -3881,7 +3880,7 @@ Aliases to built-in types
       :class:`builtins.tuple <tuple>` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: Type(Generic[CT_co])
+.. class:: Type[CT_co]
 
    Deprecated alias to :class:`type`.
 
@@ -4037,7 +4036,7 @@ Aliases to container ABCs in :mod:`collections.abc`
       :class:`collections.abc.Collection` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: Container(Generic[T_co])
+.. class:: Container[T_co]
 
    Deprecated alias to :class:`collections.abc.Container`.
 
@@ -4061,7 +4060,7 @@ Aliases to container ABCs in :mod:`collections.abc`
       :class:`collections.abc.KeysView` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: Mapping(Collection[KT], Generic[KT, VT_co])
+.. class:: Mapping[KT, VT_co](Collection[KT])
 
    Deprecated alias to :class:`collections.abc.Mapping`.
 
@@ -4077,7 +4076,7 @@ Aliases to container ABCs in :mod:`collections.abc`
       :class:`collections.abc.MappingView` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: MutableMapping(Mapping[KT, VT])
+.. class:: MutableMapping[KT, VT](Mapping[KT, VT])
 
    Deprecated alias to :class:`collections.abc.MutableMapping`.
 
@@ -4086,7 +4085,7 @@ Aliases to container ABCs in :mod:`collections.abc`
       now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: MutableSequence(Sequence[T])
+.. class:: MutableSequence[T](Sequence[T])
 
    Deprecated alias to :class:`collections.abc.MutableSequence`.
 
@@ -4095,7 +4094,7 @@ Aliases to container ABCs in :mod:`collections.abc`
       now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: MutableSet(AbstractSet[T])
+.. class:: MutableSet[T](AbstractSet[T])
 
    Deprecated alias to :class:`collections.abc.MutableSet`.
 
@@ -4103,7 +4102,7 @@ Aliases to container ABCs in :mod:`collections.abc`
       :class:`collections.abc.MutableSet` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: Sequence(Reversible[T_co], Collection[T_co])
+.. class:: Sequence[T_co](Reversible[T_co], Collection[T_co])
 
    Deprecated alias to :class:`collections.abc.Sequence`.
 
@@ -4111,7 +4110,7 @@ Aliases to container ABCs in :mod:`collections.abc`
       :class:`collections.abc.Sequence` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: ValuesView(MappingView, Collection[_VT_co])
+.. class:: ValuesView[VT_co](MappingView, Collection[VT_co])
 
    Deprecated alias to :class:`collections.abc.ValuesView`.
 
@@ -4124,7 +4123,7 @@ Aliases to container ABCs in :mod:`collections.abc`
 Aliases to asynchronous ABCs in :mod:`collections.abc`
 """"""""""""""""""""""""""""""""""""""""""""""""""""""
 
-.. class:: Coroutine(Awaitable[ReturnType], Generic[YieldType, SendType, ReturnType])
+.. class:: Coroutine[YieldType, SendType, ReturnType](Awaitable[ReturnType])
 
    Deprecated alias to :class:`collections.abc.Coroutine`.
 
@@ -4138,7 +4137,7 @@ Aliases to asynchronous ABCs in :mod:`collections.abc`
       :class:`collections.abc.Coroutine` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: AsyncGenerator(AsyncIterator[YieldType], Generic[YieldType, SendType])
+.. class:: AsyncGenerator[YieldType, SendType](AsyncIterator[YieldType])
 
    Deprecated alias to :class:`collections.abc.AsyncGenerator`.
 
@@ -4156,7 +4155,7 @@ Aliases to asynchronous ABCs in :mod:`collections.abc`
    .. versionchanged:: 3.13
       The ``SendType`` parameter now has a default.
 
-.. class:: AsyncIterable(Generic[T_co])
+.. class:: AsyncIterable[T_co]
 
    Deprecated alias to :class:`collections.abc.AsyncIterable`.
 
@@ -4166,7 +4165,7 @@ Aliases to asynchronous ABCs in :mod:`collections.abc`
       :class:`collections.abc.AsyncIterable` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: AsyncIterator(AsyncIterable[T_co])
+.. class:: AsyncIterator[T_co](AsyncIterable[T_co])
 
    Deprecated alias to :class:`collections.abc.AsyncIterator`.
 
@@ -4176,7 +4175,7 @@ Aliases to asynchronous ABCs in :mod:`collections.abc`
       :class:`collections.abc.AsyncIterator` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: Awaitable(Generic[T_co])
+.. class:: Awaitable[T_co]
 
    Deprecated alias to :class:`collections.abc.Awaitable`.
 
@@ -4191,7 +4190,7 @@ Aliases to asynchronous ABCs in :mod:`collections.abc`
 Aliases to other ABCs in :mod:`collections.abc`
 """""""""""""""""""""""""""""""""""""""""""""""
 
-.. class:: Iterable(Generic[T_co])
+.. class:: Iterable[T_co]
 
    Deprecated alias to :class:`collections.abc.Iterable`.
 
@@ -4199,7 +4198,7 @@ Aliases to other ABCs in :mod:`collections.abc`
       :class:`collections.abc.Iterable` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: Iterator(Iterable[T_co])
+.. class:: Iterator[T_co](Iterable[T_co])
 
    Deprecated alias to :class:`collections.abc.Iterator`.
 
@@ -4222,7 +4221,7 @@ Aliases to other ABCs in :mod:`collections.abc`
       ``Callable`` now supports :class:`ParamSpec` and :data:`Concatenate`.
       See :pep:`612` for more details.
 
-.. class:: Generator(Iterator[YieldType], Generic[YieldType, SendType, ReturnType])
+.. class:: Generator[YieldType, SendType, ReturnType](Iterator[YieldType])
 
    Deprecated alias to :class:`collections.abc.Generator`.
 
@@ -4244,7 +4243,7 @@ Aliases to other ABCs in :mod:`collections.abc`
    .. deprecated:: 3.12
       Use :class:`collections.abc.Hashable` directly instead.
 
-.. class:: Reversible(Iterable[T_co])
+.. class:: Reversible[T_co](Iterable[T_co])
 
    Deprecated alias to :class:`collections.abc.Reversible`.
 
@@ -4264,7 +4263,7 @@ Aliases to other ABCs in :mod:`collections.abc`
 Aliases to :mod:`contextlib` ABCs
 """""""""""""""""""""""""""""""""
 
-.. class:: ContextManager(Generic[T_co, ExitT_co])
+.. class:: ContextManager[T_co, ExitT_co]
 
    Deprecated alias to :class:`contextlib.AbstractContextManager`.
 
@@ -4283,7 +4282,7 @@ Aliases to :mod:`contextlib` ABCs
    .. versionchanged:: 3.13
       Added the optional second type parameter, ``ExitT_co``.
 
-.. class:: AsyncContextManager(Generic[T_co, AExitT_co])
+.. class:: AsyncContextManager[T_co, AExitT_co]
 
    Deprecated alias to :class:`contextlib.AbstractAsyncContextManager`.
 
