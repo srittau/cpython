@@ -3823,7 +3823,7 @@ program they are checking targets a minimum Python version of 3.9 or newer.
 Aliases to built-in types
 """""""""""""""""""""""""
 
-.. class:: Dict(dict, MutableMapping[KT, VT])
+.. class:: Dict[KT, VT](dict, MutableMapping[KT, VT])
 
    Deprecated alias to :class:`dict`.
 
@@ -3835,7 +3835,7 @@ Aliases to built-in types
       :class:`builtins.dict <dict>` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: List(list, MutableSequence[T])
+.. class:: List[T](list, MutableSequence[T])
 
    Deprecated alias to :class:`list`.
 
@@ -3848,7 +3848,7 @@ Aliases to built-in types
       :class:`builtins.list <list>` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: Set(set, MutableSet[T])
+.. class:: Set[T](set, MutableSet[T])
 
    Deprecated alias to :class:`builtins.set <set>`.
 
@@ -3860,7 +3860,7 @@ Aliases to built-in types
       :class:`builtins.set <set>` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: FrozenSet(frozenset, AbstractSet[T_co])
+.. class:: FrozenSet[T_co](frozenset, AbstractSet[T_co])
 
    Deprecated alias to :class:`builtins.frozenset <frozenset>`.
 
@@ -3898,7 +3898,7 @@ Aliases to built-in types
 Aliases to types in :mod:`collections`
 """"""""""""""""""""""""""""""""""""""
 
-.. class:: DefaultDict(collections.defaultdict, MutableMapping[KT, VT])
+.. class:: DefaultDict[KT, VT](collections.defaultdict, MutableMapping[KT, VT])
 
    Deprecated alias to :class:`collections.defaultdict`.
 
@@ -3908,7 +3908,7 @@ Aliases to types in :mod:`collections`
       :class:`collections.defaultdict` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: OrderedDict(collections.OrderedDict, MutableMapping[KT, VT])
+.. class:: OrderedDict[KT, VT](collections.OrderedDict, MutableMapping[KT, VT])
 
    Deprecated alias to :class:`collections.OrderedDict`.
 
@@ -3918,7 +3918,7 @@ Aliases to types in :mod:`collections`
       :class:`collections.OrderedDict` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: ChainMap(collections.ChainMap, MutableMapping[KT, VT])
+.. class:: ChainMap[KT, VT](collections.ChainMap, MutableMapping[KT, VT])
 
    Deprecated alias to :class:`collections.ChainMap`.
 
@@ -3928,7 +3928,7 @@ Aliases to types in :mod:`collections`
       :class:`collections.ChainMap` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: Counter(collections.Counter, Dict[T, int])
+.. class:: Counter[T](collections.Counter, Dict[T, int])
 
    Deprecated alias to :class:`collections.Counter`.
 
@@ -3938,7 +3938,7 @@ Aliases to types in :mod:`collections`
       :class:`collections.Counter` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: Deque(deque, MutableSequence[T])
+.. class:: Deque[T](deque, MutableSequence[T])
 
    Deprecated alias to :class:`collections.deque`.
 
@@ -3996,7 +3996,7 @@ Aliases to other concrete types
 Aliases to container ABCs in :mod:`collections.abc`
 """""""""""""""""""""""""""""""""""""""""""""""""""
 
-.. class:: AbstractSet(Collection[T_co])
+.. class:: AbstractSet[T_co](Collection[T_co])
 
    Deprecated alias to :class:`collections.abc.Set`.
 
@@ -4026,7 +4026,7 @@ Aliases to container ABCs in :mod:`collections.abc`
 
    .. deprecated-removed:: 3.9 3.17
 
-.. class:: Collection(Sized, Iterable[T_co], Container[T_co])
+.. class:: Collection[T_co](Sized, Iterable[T_co], Container[T_co])
 
    Deprecated alias to :class:`collections.abc.Collection`.
 
@@ -4044,7 +4044,7 @@ Aliases to container ABCs in :mod:`collections.abc`
       :class:`collections.abc.Container` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: ItemsView(MappingView, AbstractSet[tuple[KT_co, VT_co]])
+.. class:: ItemsView[KT_co, VT_co](MappingView, AbstractSet[tuple[KT_co, VT_co]])
 
    Deprecated alias to :class:`collections.abc.ItemsView`.
 
@@ -4052,7 +4052,7 @@ Aliases to container ABCs in :mod:`collections.abc`
       :class:`collections.abc.ItemsView` now supports subscripting (``[]``).
       See :pep:`585` and :ref:`types-genericalias`.
 
-.. class:: KeysView(MappingView, AbstractSet[KT_co])
+.. class:: KeysView[KT_co](MappingView, AbstractSet[KT_co])
 
    Deprecated alias to :class:`collections.abc.KeysView`.
 
