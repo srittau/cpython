@@ -970,7 +970,7 @@ using ``[]``.
 
       Added :data:`Never`.
 
-   .. deprecated:: 3.16
+   .. soft-deprecated:: 3.16
       ``NoReturn`` is deprecated, please use ``Never`` instead.
 
 .. data:: Self
@@ -1123,7 +1123,7 @@ These can be used as types in annotations. They all support subscription using
       Python, use
       ``get_origin(obj) is typing.Union or get_origin(obj) is types.UnionType``.
 
-   .. deprecated:: 3.16
+   .. soft-deprecated:: 3.16
       Creating unions using ``Union[X, Y]`` is deprecated. Use ``X | Y``
       instead.
 
@@ -1150,7 +1150,7 @@ These can be used as types in annotations. They all support subscription using
       ``Optional[X]`` can now be written as ``X | None``. See
       :ref:`union type expressions<types-union>`.
 
-   .. deprecated:: 3.16
+   .. soft-deprecated:: 3.16
       ``Optional`` is deprecated. Instead, use ``X | None`` to create optional
       unions and :class:`Union` to refer to the union type.
 
@@ -1776,7 +1776,7 @@ without the dedicated syntax, as documented below.
               ...
               # Etc.
 
-   .. deprecated:: 3.16
+   .. soft-deprecated:: 3.16
       Explicitly inheriting from ``Generic`` is deprecated. Use the dedicated
       syntax for declaring type variables instead.
 

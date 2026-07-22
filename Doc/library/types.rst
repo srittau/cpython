@@ -318,7 +318,7 @@ Standard names are defined for the following types:
 
       This is now an alias for :class:`typing.Union`.
 
-   .. deprecated:: 3.16
+   .. soft-deprecated:: 3.16
 
       Use :class:`typing.Union` instead.
 
